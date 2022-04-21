@@ -1,0 +1,86 @@
+﻿@page "/"
+
+@using Syncfusion.Blazor.PivotView
+@using Microsoft.Extensions.Logging
+@using System.Diagnostics
+
+@inject Generator generator
+@inject ILogger<Index> logger
+@inject RefreshingCache cache
+
+@implements ISubscribeToRefreshedData
+@implements IDisposable
+
+<div style="width: calc(100vw - 20rem);">
+    <SfPivotView TValue="MarketOrderVm" ShowFieldList=true ShowGroupingBar=true EnableVirtualization=true>
+        <PivotViewEvents TValue="MarketOrderVm" EnginePopulating="EnginePopulating" EnginePopulated="PivotEnginePopulated"></PivotViewEvents>
+        <PivotViewDataSourceSettings DataSource="@Data" ExpandAll=false EnableSorting=true>
+            <PivotViewColumns>
+                <PivotViewColumn Name="@nameof(MarketOrderVm.TopLevelStrategyName)"></PivotViewColumn>
+                <PivotViewColumn Name="@nameof(MarketOrderVm.StrategyName)"></PivotViewColumn>
+            </PivotViewColumns>
+            <PivotViewRows>
+                <PivotViewRow Name="@nameof(MarketOrderVm.Way)"></PivotViewRow>
+            </PivotViewRows>
+            <PivotViewValues>
+                <PivotViewValue Name="@nameof(MarketOrderVm.ExecNom)"></PivotViewValue>
+            </PivotViewValues>
+            <PivotViewFilters>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.Counterparty)"></PivotViewFilter>
+            </PivotViewFilters>
+        </PivotViewDataSourceSettings>
+        <PivotViewDisplayOption View=View.Chart></PivotViewDisplayOption>
+        <PivotChartSettings Title="Nominal break down">
+            <PivotChartSeries Type="ChartSeriesType.Bar"></PivotChartSeries>
+            <PivotChartPrimaryYAxis>
+                <PivotChartPrimaryYAxisBorder Width="0"></PivotChartPrimaryYAxisBorder>
+            </PivotChartPrimaryYAxis>
+        </PivotChartSettings>
+    </SfPivotView>
+</div>
+
+@code {
+    public List<MarketOrderVm> Data { get; set; }
+    public bool CanUpdateData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.Data = generator.Execute();
+        cache.Subscribe(this);
+    }
+
+    private void EnginePopulating(EnginePopulatingEventArgs obj)
+    {
+        CanUpdateData = false;
+        logger.LogInformation("[pivot-mkt] PivotEnginePopulating");
+    }
+
+    private void PivotEnginePopulated(EnginePopulatedEventArgs obj)
+    {
+        CanUpdateData = true;
+        logger.LogInformation("[pivot-mkt] PivotEnginePopulated");
+    }
+
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public void Dispose()
+    {
+        cache.Unsubscribe(this);
+        logger.LogInformation("Disposed");
+    }
+
+    public async Task UpdateAsync(List<MarketOrderVm> marketOrders)
+    {
+        void All()
+        {
+            this.Data = marketOrders;
+            StateHasChanged();
+        }
+
+        Stopwatch sw = Stopwatch.StartNew();
+        logger.LogInformation("[dbg-perf] UI Refresh STARTS ...");
+        await InvokeAsync(All);
+        logger.LogInformation($"[dbg-perf] UI Refresh {Data.Count} Mkt took {sw.Elapsed}");
+    }
+
+}

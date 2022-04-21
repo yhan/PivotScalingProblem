@@ -1,0 +1,42 @@
+﻿@page "/pivot-table/pivot-chart"
+
+@using Syncfusion.Blazor.PivotView
+
+<div class="width: calc(100vw - 20rem);">
+    <div class="content-wrapper">
+        <SfPivotView TValue="PivotProductDetails" ShowFieldList=true ShowGroupingBar=true EnableVirtualization=true>
+            <PivotViewDataSourceSettings DataSource="@Data" ExpandAll=false EnableSorting=true>
+                <PivotViewColumns>
+                    <PivotViewColumn Name="Country"></PivotViewColumn>
+                    <PivotViewColumn Name="Products"></PivotViewColumn>
+                </PivotViewColumns>
+                <PivotViewRows>
+                    <PivotViewRow Name="Year"></PivotViewRow>
+                    <PivotViewRow Name="Order_Source" Caption="Order Source"></PivotViewRow>
+                </PivotViewRows>
+                <PivotViewValues>
+                    <PivotViewValue Name="Amount" Caption="Sales Amount"></PivotViewValue>
+                </PivotViewValues>
+                <PivotViewFilters>
+                    <PivotViewFilter Name="@nameof(PivotProductDetails.Product_Categories)"></PivotViewFilter>
+                </PivotViewFilters>
+            </PivotViewDataSourceSettings>
+            <PivotViewDisplayOption View=View.Chart></PivotViewDisplayOption>
+            <PivotChartSettings Title="Sales Analysis">
+                <PivotChartSeries Type="ChartSeriesType.Bar"></PivotChartSeries>
+                <PivotChartPrimaryYAxis>
+                    <PivotChartPrimaryYAxisBorder Width="0"></PivotChartPrimaryYAxisBorder>
+                </PivotChartPrimaryYAxis>
+            </PivotChartSettings>
+        </SfPivotView>
+    </div>
+</div>
+
+@code{
+    public List<PivotProductDetails> Data { get; set; }
+    protected override void OnInitialized()
+    {
+        this.Data = PivotProductDetails.GetProductData();
+    }
+
+}
