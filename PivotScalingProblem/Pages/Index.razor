@@ -1,8 +1,8 @@
 ﻿@page "/"
-
 @using Syncfusion.Blazor.PivotView
 @using Microsoft.Extensions.Logging
 @using System.Diagnostics
+@using Syncfusion.Blazor.Buttons
 
 @inject Generator generator
 @inject ILogger<Index> logger
@@ -11,8 +11,9 @@
 @implements ISubscribeToRefreshedData
 @implements IDisposable
 
+<SfButton CssClass="e-flat" IsPrimary="true" IconCss="@IconCss" Content="@Content" IsToggle="true" @onclick="OnToggleClick"></SfButton>
 <div style="width: calc(100vw - 20rem);">
-    <SfPivotView TValue="MarketOrderVm" ShowFieldList=true ShowGroupingBar=true EnableVirtualization=true>
+    <SfPivotView TValue="MarketOrderVm" ShowFieldList=true ShowGroupingBar=true AllowDataCompression=false EnableVirtualization=false>
         <PivotViewEvents TValue="MarketOrderVm" EnginePopulating="EnginePopulating" EnginePopulated="PivotEnginePopulated"></PivotViewEvents>
         <PivotViewDataSourceSettings DataSource="@Data" ExpandAll=false EnableSorting=true>
             <PivotViewColumns>
@@ -29,7 +30,7 @@
                 <PivotViewFilter Name="@nameof(MarketOrderVm.Counterparty)"></PivotViewFilter>
             </PivotViewFilters>
         </PivotViewDataSourceSettings>
-        <PivotViewDisplayOption View=View.Chart></PivotViewDisplayOption>
+        <PivotViewDisplayOption View=View.Both></PivotViewDisplayOption>
         <PivotChartSettings Title="Nominal break down">
             <PivotChartSeries Type="ChartSeriesType.Bar"></PivotChartSeries>
             <PivotChartPrimaryYAxis>
@@ -40,8 +41,12 @@
 </div>
 
 @code {
+    public string IconCss = "e-icons e-pause";
+    public string Content = "Pause";
+    private bool paused = false;
     public List<MarketOrderVm> Data { get; set; }
     public bool CanUpdateData { get; set; }
+    private Stopwatch stopwatch;
 
     protected override void OnInitialized()
     {
@@ -52,13 +57,14 @@
     private void EnginePopulating(EnginePopulatingEventArgs obj)
     {
         CanUpdateData = false;
+        stopwatch = Stopwatch.StartNew();
         logger.LogInformation("[pivot-mkt] PivotEnginePopulating");
     }
 
     private void PivotEnginePopulated(EnginePopulatedEventArgs obj)
     {
         CanUpdateData = true;
-        logger.LogInformation("[pivot-mkt] PivotEnginePopulated");
+        logger.LogInformation($"[pivot-mkt] PivotEnginePopulated, takes {stopwatch.Elapsed}");
     }
 
     public Guid Id { get; } = Guid.NewGuid();
@@ -82,5 +88,23 @@
         await InvokeAsync(All);
         logger.LogInformation($"[dbg-perf] UI Refresh {Data.Count} Mkt took {sw.Elapsed}");
     }
+    
+    public void OnToggleClick()
+    {
+        if (!paused)
+        {
+            this.Content = "Play";
+            this.IconCss = "e-icons e-play";
+            cache.Unsubscribe(this);
+        }
+        else
+        {
+            this.Content = "Pause";
+            this.IconCss = "e-icons e-pause";
+            cache.Subscribe(this);
+        }
 
+        paused = !paused;
+        Debug.WriteLine($"new paused = {paused}");
+    }
 }

@@ -24,8 +24,9 @@ public class RefreshingCache
             if (!subscriber.CanUpdateData)
             {
                 logger.LogInformation($"Skip UI update, UI is busy");
+                continue;
             }
-            logger.LogInformation($"Start UI update, UI is busy");
+            logger.LogInformation($"Start UI update");
             subscriber.UpdateAsync(marketOrders);
         }
     }
