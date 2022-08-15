@@ -13,7 +13,7 @@
 
 <SfButton CssClass="e-flat" IsPrimary="true" IconCss="@IconCss" Content="@Content" IsToggle="true" @onclick="OnToggleClick"></SfButton>
 <div style="width: calc(100vw - 20rem);">
-    <SfPivotView TValue="MarketOrderVm" ShowFieldList=true ShowGroupingBar=true AllowDataCompression=false EnableVirtualization=false>
+    <SfPivotView TValue="MarketOrderVm" height="400" ShowFieldList=false ShowGroupingBar=true AllowDataCompression=true EnableVirtualization=true>
         <PivotViewEvents TValue="MarketOrderVm" EnginePopulating="EnginePopulating" EnginePopulated="PivotEnginePopulated"></PivotViewEvents>
         <PivotViewDataSourceSettings DataSource="@Data" ExpandAll=false EnableSorting=true>
             <PivotViewColumns>
@@ -28,6 +28,14 @@
             </PivotViewValues>
             <PivotViewFilters>
                 <PivotViewFilter Name="@nameof(MarketOrderVm.Counterparty)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.Way)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.InstanceId)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.InstrumentType)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.StrategyName)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.TopLevelStrategyName)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.VenueId)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.VenueType)"></PivotViewFilter>
+                <PivotViewFilter Name="@nameof(MarketOrderVm.VenueCategory)"></PivotViewFilter>
             </PivotViewFilters>
         </PivotViewDataSourceSettings>
         <PivotViewDisplayOption View=View.Both></PivotViewDisplayOption>

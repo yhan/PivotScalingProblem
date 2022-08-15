@@ -6,12 +6,15 @@
     <RootNamespace>blazor_pivottable</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Syncfusion.Blazor" Version="19.4.0.48" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug2\</OutputPath>
+  </PropertyGroup>
+  
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.3" />
+    <PackageReference Include="Syncfusion.Blazor.PivotTable" Version="20.2.0.43" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="20.2.0.43" />
   </ItemGroup>
 
 </Project>
