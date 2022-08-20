@@ -16,5 +16,10 @@
     <PackageReference Include="Syncfusion.Blazor.PivotTable" Version="20.2.0.43" />
     <PackageReference Include="Syncfusion.Blazor.Themes" Version="20.2.0.43" />
   </ItemGroup>
+  
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
 
 </Project>

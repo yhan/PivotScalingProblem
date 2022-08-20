@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using Index = blazor_pivottable.Pages.Index;
+﻿using Microsoft.Extensions.Configuration;
+// using Index = blazor_pivottable.Pages.Index;
 
-namespace blazor_pivottable;
+namespace Common;
 
 public class Generator
 {
@@ -26,19 +24,26 @@ public class Generator
         var collection = new List<MarketOrderVm>();
         for (int i = 0; i < size; i++)
         {
+            double coef = (double) i / size;
+            
             collection.Add(new MarketOrderVm(Select<string>(topLevelStrategyOptions),
                 Select(strategyOptions),
                 Select(wayOptions),
-                Math.Round(rand.NextDouble() * 1_000_000, MidpointRounding.ToZero),
+                execNom: Math.Round(rand.NextDouble() * 1_000_000, MidpointRounding.ToZero) * coef,
                 Select(instanceOptions),
                 Select(counterpartyOptions),
                 Select(Enum.GetValues<InstrumentType>()),
                 Select(Enum.GetValues<VenueCategory>()),
                 Select(venueOptions),
-                Select(Enum.GetValues<VenueType>())));
+                Select(Enum.GetValues<VenueType>()),
+                RandomDateTimeOffset()));
         }
 
         return collection;
+    }
+    private DateTimeOffset RandomDateTimeOffset()
+    {
+        return DateTimeOffset.UtcNow.AddSeconds(-Math.Round(rand.NextDouble() * 1_000_000, MidpointRounding.ToZero));
     }
 
     private static T Select<T>(T[] array)
@@ -52,7 +57,7 @@ public class MarketOrderVm
     public MarketOrderVm(string topLevelStrategyName, string strategyName, string way, double execNom,
         string instanceId,
         string counterparty, InstrumentType instrumentType, VenueCategory venueCategory, string venueId
-        , VenueType venueType)
+        , VenueType venueType, DateTimeOffset timestamp)
     {
         TopLevelStrategyName = topLevelStrategyName;
         StrategyName = strategyName;
@@ -64,12 +69,17 @@ public class MarketOrderVm
         VenueCategory = venueCategory;
         VenueId = venueId;
         VenueType = venueType;
+        Timestamp = timestamp;
+        TimestampES = Timestamp.ToString("yyyyMMdd'T'hhmmssZ");
+        EpochSeconds = timestamp.ToUnixTimeSeconds();
     }
+    public long EpochSeconds { get; set; }
+    public string TimestampES { get; set; }
 
     public MarketOrderVm()
     {
-        
     }
+    public  DateTimeOffset Timestamp { get; set; }
 
     public string StrategyName { get; set; }
     public string Way { get;  set;}
