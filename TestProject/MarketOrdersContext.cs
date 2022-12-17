@@ -29,13 +29,14 @@ public class MarketOrdersContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("daily");
+        //modelBuilder.HasDefaultSchema("daily");
         modelBuilder
             .Entity<MarketOrderVm>(
             eb => {
-                eb.HasNoKey();
+                //eb.HasNoKey();
                 // eb.ToView("View_BlogPostCounts");
                 // eb.Property(v => v.BlogName).HasColumnName("Name");
+                eb.HasKey(keyExpression: m => m.Id);
             });
         base.OnModelCreating(modelBuilder);
     }

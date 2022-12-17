@@ -26,7 +26,9 @@ public class Generator
         {
             double coef = (double) i / size;
             
-            collection.Add(new MarketOrderVm(Select<string>(topLevelStrategyOptions),
+            collection.Add(new MarketOrderVm(
+                Guid.NewGuid().ToString(),
+                Select<string>(topLevelStrategyOptions),
                 Select(strategyOptions),
                 Select(wayOptions),
                 execNom: Math.Round(rand.NextDouble() * 1_000_000, MidpointRounding.ToZero) * coef,
@@ -50,48 +52,6 @@ public class Generator
     {
         return array[rand.Next(0, array.Length)];
     }
-}
-
-public class MarketOrderVm
-{
-    public MarketOrderVm(string topLevelStrategyName, string strategyName, string way, double execNom,
-        string instanceId,
-        string counterparty, InstrumentType instrumentType, VenueCategory venueCategory, string venueId
-        , VenueType venueType, DateTimeOffset timestamp)
-    {
-        TopLevelStrategyName = topLevelStrategyName;
-        StrategyName = strategyName;
-        Way = way;
-        ExecNom = execNom;
-        InstanceId = instanceId;
-        Counterparty = counterparty;
-        InstrumentType = instrumentType;
-        VenueCategory = venueCategory;
-        VenueId = venueId;
-        VenueType = venueType;
-        Timestamp = timestamp;
-        TimestampES = Timestamp.ToString("yyyyMMdd'T'hhmmssZ");
-        EpochSeconds = timestamp.ToUnixTimeSeconds();
-    }
-    public long EpochSeconds { get; set; }
-    public string TimestampES { get; set; }
-
-    public MarketOrderVm()
-    {
-    }
-    public  DateTimeOffset Timestamp { get; set; }
-
-    public string StrategyName { get; set; }
-    public string Way { get;  set;}
-    public double ExecNom { get;  set;}
-    public string InstanceId { get;  set;}
-    public string Counterparty { get;  set;}
-    public InstrumentType InstrumentType { get;  set;}
-    public VenueCategory VenueCategory { get;  set;}
-    public string VenueId { get;  set;}
-    public VenueType VenueType { get;  set;}
-
-    public string TopLevelStrategyName { get; set; }
 }
 
 public enum InstrumentType

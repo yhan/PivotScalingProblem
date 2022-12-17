@@ -5,6 +5,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace TestProject;
 
@@ -46,6 +47,35 @@ public class GenerateTestData
         await dbContext.BulkInsertAsync(marketOrderVms);
         TestContext.WriteLine($"Insert All took {sw.Elapsed}");
     }
+
+    [Test]
+    public async Task DebugTempTableNotDropped()
+    {
+        var config = new Config();
+        config.Add("dataSize", 100);
+        var bulkConfig = new BulkConfig
+        {
+            //PreserveInsertOrder = true, // true is default
+            SetOutputIdentity = true,
+            //BatchSize = 4000,
+            UseTempDB = true,
+            //CalculateStats = true
+        };
+        
+        var generator = new Generator(config);
+        while(true)
+        {
+            List<MarketOrderVm> marketOrderVms = generator.Execute();
+            await using var dbContext = new MarketOrdersContext();
+            await using var transaction = await dbContext.Database.BeginTransactionAsync();
+           
+            await dbContext.BulkInsertAsync(marketOrderVms, bulkConfig);
+            await transaction.CommitAsync();
+
+            await Task.Delay(2000);
+        }
+    }
+    
 
     [Test]
     public async Task ArchiveWithRawSql()

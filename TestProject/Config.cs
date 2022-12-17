@@ -4,7 +4,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace TestProject;
 
-internal class Config: IConfiguration
+public class Config: IConfiguration
 {
     public IConfigurationSection GetSection(string key)
     {
