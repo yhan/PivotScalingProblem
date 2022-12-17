@@ -11,7 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<WriteToDbService>();
 builder.Services.AddDbContextFactory<MarketOrdersContext>(optionsBuilder => {
-    optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=OrdersDB;Username=postgres;Password=postgres;Search Path=daily")
+    optionsBuilder.UseNpgsql(MarketOrdersContext.DBCnxString)
         .EnableSensitiveDataLogging();
 });
 

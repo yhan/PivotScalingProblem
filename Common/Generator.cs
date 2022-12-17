@@ -13,10 +13,16 @@ public class Generator
     private static string[] venueOptions = { "ChiX", "ENX", "ENA-main", "GER-main" };
     private static string[] counterpartyOptions = { "cli-a", "cli-b", "cli-c" };
     private readonly int size;
+    private readonly List<string> idBuffer;
 
     public Generator(IConfiguration config)
     {
         this.size = int.Parse(config["dataSize"]);
+        idBuffer = new List<string>();
+        for (int i = 0; i < size; i++)
+        {
+            idBuffer.Add(Guid.NewGuid().ToString());
+        }
     }
     
     public List<MarketOrderVm> Execute()
@@ -26,8 +32,9 @@ public class Generator
         {
             double coef = (double) i / size;
             
+            var id = i%7==0 ? Guid.NewGuid().ToString(): idBuffer[i];
             collection.Add(new MarketOrderVm(
-                Guid.NewGuid().ToString(),
+                id,
                 Select<string>(topLevelStrategyOptions),
                 Select(strategyOptions),
                 Select(wayOptions),
