@@ -36,7 +36,8 @@ public class WriteToDbService : IHostedService
             List<MarketOrderVm> marketOrderVms = generator.Execute();
             using var dbContext = factory.CreateDbContext();
             using var transaction = dbContext.Database.BeginTransaction();
-
+            // System.InvalidOperationException: When 'UseTempDB' is set then BulkOperation has to be inside Transaction.
+            // Otherwise destination table gets dropped too early because transaction ends before operation is finished.
             dbContext.BulkInsertOrUpdate(marketOrderVms, bulkConfig);
             transaction.Commit();
 

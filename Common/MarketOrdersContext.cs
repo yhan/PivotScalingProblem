@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Reflection;
+using Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -10,7 +11,10 @@ public class MarketOrdersContext : DbContext
     //public static string DBCnxString = "Host=localhost;Port=5432;Database=OrdersDB;Username=postgres;Password=postgres;Search Path=daily";
     
     //v.12
-    public static string DBCnxString = "Host=localhost;Port=5433;Database=OrdersDB;Username=postgres;Password=postgres12;Search Path=daily";
+    //public static string DBCnxString = "Host=localhost;Port=5433;Database=OrdersDB;Username=postgres;Password=postgres12;Search Path=daily";
+    
+    //v.15
+    public static string DBCnxString = "Host=localhost;Port=5444;Database=OrdersDB;Username=postgres;Password=postgres;Search Path=daily";
     public MarketOrdersContext(DbContextOptions<MarketOrdersContext> optionsBuilderOptions)
         :base(optionsBuilderOptions)
     {
@@ -23,7 +27,7 @@ public class MarketOrdersContext : DbContext
     public DbSet<MarketOrderVm> MarketOrderVms { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(DBCnxString);//v12 pwd postgres12
+        optionsBuilder.UseNpgsql(DBCnxString);
     }
     
     // protected override void OnModelCreating(DbModelBuilder modelBuilder)
